@@ -1,17 +1,17 @@
 from collections import deque
 
 #contantes de terreno
-camino_libre=0  #transitado
-edificio=1  #obstaculo1
-agua=2  #obstaculo2
-bloqueo=3  #bloqueadas temporalmente 
+camino_libre = 0  #transitado
+edificio = 1  #obstaculo1
+agua = 2  #obstaculo2
+bloqueo = 3  #bloqueadas temporalmente 
 
 #constantes para visualizar
-visual_libre='.'
-visual_obstaculo='x'
-visual_ruta='*'
-visual_inicio='I'
-visual_final='F'
+visual_libre=' . '
+visual_obstaculo=' x '
+visual_ruta=' * '
+visual_inicio=' I '
+visual_final=' F '
 
 def crear_mapa():
 
@@ -78,10 +78,10 @@ def visualizar_mapa(mapa,ruta= None,inicio= None,fin=None):
             elif valor in [edificio,agua,bloqueo]:
                 simbolo = visual_obstaculo
 
-                fila_str += simbolo
+            fila_str += simbolo
 
-                print(fila_str)
-                print("=" * ancho + "\n")
+        print(fila_str)
+    print("=" * ancho + "\n")
                 
 def es_coodenada_valida(mapa,fila,columna):
     
@@ -100,7 +100,7 @@ def obtener_coordenadas(mapa,tipo):
     #pide la coordenada al usuario y la valida repetidamente
     while True:
         try:
-            entrada = input("ingresa la coordenada de {tipo}(fila,columna)")
+            entrada = input(f"ingresa la coordenada de {tipo}(fila,columna)")
 #map (int,...) convierte ambos elementos del split en enteros 
             fila,columna = map(int,entrada.split(','))
             if es_coodenada_valida(mapa,fila,columna):
@@ -149,12 +149,12 @@ def reconstruir_ruta(camino_padre,inicio,fin):
         actual = camino_padre.get(actual)
 
         #invertimos la lista para obtener inicio -> fin
-        ruta_correcta = ruta[::-1]
+    ruta_correcta = ruta[::-1]
 
         #devolvemos solo los puntos intermedios para visualizarlos con '*'
-        if len(ruta_correcta) > 2:
+    if len(ruta_correcta) > 2:
             return ruta_correcta[1:-1]
-        else:
+    else:
             return []
         
 def buscar_ruta_mas_corta(mapa,inicio,fin):
@@ -189,6 +189,89 @@ def buscar_ruta_mas_corta(mapa,inicio,fin):
                 
     #si la cola se vacia y no hay ruta :            
     return None
+
+def calculadora_rutas():
+    #funcion principal que maneja la logica de eleccion del mapa y la ejecucion
+
+    #Hago que las FILAS y COLUMNAS sean variables globales para modificarlas aqui
+    global filas,columnas
+
+    print("=================================")
+    print(       "Calculadora de Rutas"      )
+    print("=================================")
+
+    #configuracion del mapa 
+    while True:
+        #uso .srip() para quitar espacios en blanco innecesarios
+        #Y [0] para tomar solo el primer caracter que ingreso el usuario
+        entrada = input("¿Usar mapa por Defecto 10x10 (d) o Crear uno nuevo (c)? [d/c]: ")
+
+        if entrada: #asegura que el usuario no solo presione Enter 
+            eleccion = entrada.strip().lower()[0] #toma el primer caracter en minuscula
+            if eleccion in ['d','c']:
+                break
+
+        print("Opcion invalida ingresa solo 'd' o 'c'")
+
+    if eleccion == 'c':
+        print("\n--- Creacion de Mapa Personalizado ---")
+        while True:
+            try:
+                f = int (input("Ingresa el numero de filas "))
+                c = int (input("Ingresa el numero de columnas"))
+                if f <= 1 or c <= 1:
+                    print("El mapa debe tener al menos 2x2")
+                    continue
+                break
+            except ValueError:
+                print("Error: Por favor, ingresa numeros enteros positivos")
+
+        mapa_actual = crear_mapa_vacio(f,c)
+
+    else:
+            #opcion 'd' por defecto 
+        mapa_actual = crear_mapa()
+
+            #Ajuste de las variables de tamanho globales 
+    filas = len(mapa_actual)
+    columnas = len(mapa_actual[0])
+            
+            #Confuguracion dinamica 
+    visualizar_mapa(mapa_actual)
+            
+            #Si eligio mapa personalizado, forzamos la opcion de agregar obstaculos
+    if eleccion == 'c':
+        print("El mapa esta vacio. Agrega obstaculos o prueba tu ruta")
+        agregar_obstaculo_dinamico(mapa_actual)
+    else:
+        opcion = input("Deseas agregar obstaculos dinamicamente al mapa por defecto?(s/n):").lower()
+        if opcion == 's':
+            agregar_obstaculo_dinamico(mapa_actual)
+
+                #Obtener coordenadas 
+    print(f"Mapa activo: {filas} filas x {columnas} columnas")
+                
+    inicio = obtener_coordenadas(mapa_actual,"Inicio (I)")
+    fin = obtener_coordenadas(mapa_actual, "Destino (F)")
+
+                #Ejecutar BFS
+    print(f"\n Buscando ruta de {inicio} a {fin}...") 
+    ruta_encontrada = buscar_ruta_mas_corta(mapa_actual,inicio,fin)
+
+                #Mostrar el resultado 
+    if ruta_encontrada is None:
+        print("\n============================================")
+        print("Ruta imposible! No se pudo encontrar un camino")
+        print("==============================================")
+    else:
+        print(f"\nRuta encontrada! Longitud: {len(ruta_encontrada)+2} pasos")
+        visualizar_mapa(mapa_actual,ruta_encontrada,inicio,fin)
+
+#punto de Entrada 
+
+if __name__ == "__main__":
+    calculadora_rutas()
+
 
 
 
