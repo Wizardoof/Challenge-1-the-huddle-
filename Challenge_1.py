@@ -1,5 +1,5 @@
 from collections import deque # solo lo uso para la reconstrucción de ruta.
-import heapq # Módulo CLAVE: Implementa la cola de prioridad (Min-Heap) para Dijkstra.
+import heapq #Implementa la cola de prioridad (Min-Heap) para Dijkstra.
 
 # CONSTANTES DE TERRENO Y MODELO DE COSTOS
 
