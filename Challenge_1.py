@@ -21,21 +21,26 @@ filas = 0
 columnas = 0
 
 
-def crear_mapa_vacio(f, c):
+def crear_mapa_vacio(num_filas, num_columnas):
     """Crea un mapa nuevo con caminos libres (0) del tamaño especificado."""
-    mapa = [[camino_libre for _ in range(c)] for _ in range(f)]
+    mapa = [[camino_libre for _ in range(num_columnas)] for _ in range(num_filas)]
     # Opcionalmente, puedes añadir un obstáculo inicial para probar el ruteo:
-    if f > 5 and c > 5:
-        mapa[f//2][c//2] = bloqueo # Bloqueo en el centro
+    if num_filas > 5 and num_columnas > 5:
+        mapa[num_filas//2][num_columnas//2] = bloqueo # Bloqueo en el centro
     return mapa
 
 
 def es_coodenada_valida(mapa,fila,columna):
     """Verifica límites y transibilidad. Solo Edificio (1) es muro."""
-    es_dentro_limites = (0<= fila < filas) and (0<= columna < columnas)
+    filas_mapa = len(mapa)
+    columnas_mapa = len(mapa[0])
+
+    es_dentro_limites = (0<= fila < filas_mapa) and (0<= columna < columnas_mapa)
+
     if not es_dentro_limites: return False
     
     valor = mapa[fila][columna]
+
     es_muro = valor == edificio 
     return not es_muro
 
@@ -65,8 +70,14 @@ def reconstruir_ruta(camino_padre,inicio,fin):
 
 def visualizar_mapa(mapa,ruta= None,inicio= None,fin=None):
     """Imprime el mapa mostrando rutas y terrenos."""
+    filas = len(mapa)
+    
+    columnas = len(mapa[0])
+
     ruta_set= set(ruta) if ruta else set()
+
     ancho = columnas * 3+6 
+
     print ("\n" + "=" * ancho) 
     print( f"Mapa de la ciudad ({filas}x{columnas})")
     print ("=" * ancho)
